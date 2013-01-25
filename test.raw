@@ -4,8 +4,8 @@ a= b+d^e where
         d=3 
         e=2;;
 
-b=2^c where c=e+1
-            e=5;; 
+b=2^e where c=1
+            e=5+c;; 
 c=d^2 where ;d =3;;
 
 

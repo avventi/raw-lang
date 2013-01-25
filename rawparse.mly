@@ -42,7 +42,7 @@ sentence: rhs EQ lhs    { ($1,$3) }
 rhs: SYMB { $1 }
 ;
 lhs: exp  { $1 }
-     |  exp WHERE whereblock blockend   { Rawast.Where ($1, $3) }
+     |  exp WHERE whereblock blockend   { Rawast.Where ($1, List.rev $3) }
 ;
 blockend:   ENDBLOCK    {}
 ;
