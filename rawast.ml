@@ -11,24 +11,20 @@ let compute_binary op a b = match op with
     | "^" -> a ** b
     | _ -> raise (Invalid_argument "unsupported operator");;
 
-let rec resolve_expr theexpr =
-    match theexpr with 
-        | Where (main_expr, (name,sub_expr)::expr_list) -> 
-            let value = resolve_expr sub_expr in
-            let new_expr = subst_expr main_expr name value in
-            resolve_expr (Where (new_expr,expr_list))
-        | Where (main_expr, []) -> resolve_expr main_expr
+let resolve_expr theexpr =
+    (* *)
+    let rec _rec_resolve main_expr value_tbl = 
+        match main_expr with 
+        | Where (main_expr, expr_list) -> let tbl = _build_tbl expr_list (Hashtbl.create 10)
+                                          in _rec_resolve main_expr tbl
         | Number num -> num
-        | Binary (op, expr1, expr2) ->  let value1 = resolve_expr expr1 in
-                                        let value2 = resolve_expr expr2 in
+        | Binary (op, expr1, expr2) ->  let value1 = _rec_resolve expr1 value_tbl in
+                                        let value2 = _rec_resolve expr2 value_tbl in
                                         compute_binary op value1 value2
-        | Variable name -> raise (Invalid_argument "unresolver variable")
+        | Variable name -> Hashtbl.find value_tbl name
         | Constant name -> raise (Invalid_argument "unresolver constant")
-and subst_expr main_expr expr_name value = match main_expr with
-    | Variable name -> if expr_name = name then Number value else Variable name
-    | Constant name -> raise (Invalid_argument "unresolver constant")
-    | Number num -> Number num
-    | Binary (op, expr1, expr2) -> let new_expr1 = subst_expr expr1 expr_name value in
-                                   let new_expr2 = subst_expr expr2 expr_name value in
-                                   Binary (op, new_expr1, new_expr2)
-    | Where _ -> raise (Invalid_argument "unexpected where block");;
+    and _build_tbl expr_list tbl = match expr_list with 
+        | (name,sub_expr)::tail_list -> let value = _rec_resolve sub_expr tbl in
+                                            Hashtbl.add tbl name value; _build_tbl tail_list tbl 
+        | [] -> tbl
+    in _rec_resolve theexpr (Hashtbl.create 10);;

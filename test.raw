@@ -4,7 +4,7 @@ a= b+d^e where
         d=3 
         e=2;;
 
-b=2^c where c=1
+b=2^c where c=e+1
             e=5;; 
 c=d^2 where ;d =3;;
 
