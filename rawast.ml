@@ -1,9 +1,17 @@
+type var= 
+    | Normal of string
+    | Unique of string
+
+let get_name = function
+    | Normal name -> name
+    | Unique name -> name;;
+
 type expr=
     | Number of float
     | Constant of string
     | Variable of string
     | Binary of string * expr * expr
-    | Where of expr *  (string * expr) list 
+    | Where of expr *  (var * expr) list 
 
 let compute_binary op a b = match op with
     | "+" -> a +. b
@@ -21,7 +29,10 @@ let resolve_expr theexpr =
         | Binary (op, expr1, expr2) ->  let value1 = _rec_resolve expr1 value_tbl in
                                         let value2 = _rec_resolve expr2 value_tbl in
                                         compute_binary op value1 value2
-        | Variable name -> Hashtbl.find value_tbl name
+        | Variable name -> (try Hashtbl.find value_tbl (Normal name)
+                           with
+                            Not_found -> let e = Hashtbl.find value_tbl (Unique name) in
+                            Hashtbl.remove value_tbl (Unique name); e)
         | Constant name -> raise (Invalid_argument "unresolver constant")
     and _build_tbl expr_list tbl = match expr_list with 
         | (name,sub_expr)::tail_list -> let value = _rec_resolve sub_expr tbl in

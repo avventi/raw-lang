@@ -11,6 +11,7 @@ open Rawast
 %token ENDBLOCK
 %token LPAREN RPAREN
 %token EQ
+%token UNIQUE
 %token <float> NUM
 %token <string> LOP
 %token <string> ROP
@@ -31,15 +32,17 @@ open Rawast
 %%
 
 input:  /* empty */                 {}        
-        | input sentence            { let (name,theexpr) = $2 in 
+        | input sentence            { let (var,theexpr) = $2 in 
                                       let value = string_of_float (Rawast.resolve_expr theexpr) in
-                                      print_string ("\ngot: "^name^" = "^value^"\nreading: "); flush stdout}
+                                      print_string ("\ngot: "^(Rawast.get_name var)^" = "^value^"\nreading: "); 
+                                      flush stdout}
         | input ENDLINE             { }
         | input EOF                 { print_string "\ncompleted!\n"; raise End_of_file }
 ;
 sentence: rhs EQ lhs    { ($1,$3) }  
 ;
-rhs: SYMB { $1 }
+rhs: SYMB { Rawast.Normal $1 }
+    | UNIQUE SYMB { Rawast.Unique $2 }
 ;
 lhs: exp  { $1 }
      |  exp WHERE whereblock blockend   { Rawast.Where ($1, List.rev $3) }

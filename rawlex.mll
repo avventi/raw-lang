@@ -26,5 +26,6 @@ rule token = parse
     | '('           { print_string "("; LPAREN }
     | ')'           { print_string ")"; RPAREN }
     | '='           { print_string "="; EQ }
+    | '!'           { print_string "!"; UNIQUE }
     | _             { token lexbuf }
     | eof           { EOF }                 
