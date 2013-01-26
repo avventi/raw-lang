@@ -1,6 +1,10 @@
-type var= 
+type var = 
     | Normal of string
     | Unique of string
+
+type value =
+    | Value of float
+    | Missing
 
 let get_name = function
     | Normal name -> name
@@ -29,13 +33,17 @@ let resolve_expr theexpr =
         | Binary (op, expr1, expr2) ->  let value1 = _rec_resolve expr1 value_tbl in
                                         let value2 = _rec_resolve expr2 value_tbl in
                                         compute_binary op value1 value2
-        | Variable name -> (try Hashtbl.find value_tbl (Normal name)
-                           with
-                            Not_found -> let e = Hashtbl.find value_tbl (Unique name) in
-                            Hashtbl.remove value_tbl (Unique name); e)
+        | Variable name -> let thevalue = (try Hashtbl.find value_tbl (Normal name)
+                                with 
+                                    Not_found -> let e = Hashtbl.find value_tbl (Unique name) in
+                                    Hashtbl.replace value_tbl (Unique name) Missing; e) in
+                            (match thevalue with
+                                |Value thevalue -> thevalue
+                                |Missing -> raise (Invalid_argument "second use of a unique value attempted"))
         | Constant name -> raise (Invalid_argument "unresolver constant")
     and _build_tbl expr_list tbl = match expr_list with 
-        | (name,sub_expr)::tail_list -> let value = _rec_resolve sub_expr tbl in
-                                            Hashtbl.add tbl name value; _build_tbl tail_list tbl 
+        | (name,sub_expr)::tail_list -> let thevalue = _rec_resolve sub_expr tbl in
+                                            Hashtbl.add tbl name (Value thevalue); 
+                                            _build_tbl tail_list tbl 
         | [] -> tbl
     in _rec_resolve theexpr (Hashtbl.create 10);;
