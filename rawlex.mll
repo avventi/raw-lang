@@ -3,7 +3,14 @@
     open Lexing
     
     let stbl = Hashtbl.create 100;;
-    Hashtbl.add stbl "where" (WHERE);;
+    Hashtbl.add stbl "where" WHERE;;
+    
+    let otbl = Hashtbl.create 100;;
+    Hashtbl.add otbl "+" (LOP "+");;
+    Hashtbl.add otbl "-" (LOP "-");;
+    Hashtbl.add otbl "*" (LOP "*");;
+    Hashtbl.add otbl "^" (ROP "^");;
+ 
 }
 
 let alpha = ['a'-'z' 'A'-'Z']
@@ -21,10 +28,9 @@ rule token = parse
     | alpha+ as symb { print_string (symb^" "); try Hashtbl.find stbl symb with Not_found -> SYMB symb} 
     | '+'
     | '-'
-    | '*' as lop    
-                    { print_string "LOP "; LOP (Char.escaped lop) }
-    | '^' as rop
-                    { print_string "ROP "; ROP (Char.escaped rop) }
+    | '*' 
+    | '^' as op
+                    { let _op = Char.escaped op in print_string _op; Hashtbl.find otbl _op }
     | '('           { print_string "("; LPAREN }
     | ')'           { print_string ")"; RPAREN }
     | '='           { print_string "="; EQ }
