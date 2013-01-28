@@ -1,6 +1,9 @@
 {
     open Rawparse
     open Lexing
+    
+    let stbl = Hashtbl.create 100;;
+    Hashtbl.add stbl "where" (WHERE);;
 }
 
 let alpha = ['a'-'z' 'A'-'Z']
@@ -15,8 +18,7 @@ rule token = parse
     | ';'ws*';'     { print_string "ENDBLOCK "; flush stdout; ENDBLOCK }
     | digit+ as num 
                     { print_string (num^" "); NUM (float_of_string num)}
-    | "where"       { print_string "WHERE "; WHERE }
-    | alpha+ as symb { print_string (symb^" "); SYMB symb} 
+    | alpha+ as symb { print_string (symb^" "); try Hashtbl.find stbl symb with Not_found -> SYMB symb} 
     | '+'
     | '-'
     | '*' as lop    
