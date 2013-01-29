@@ -9,6 +9,7 @@ open Rawast
 %token EOF
 %token WHERE
 %token ENDBLOCK
+%token TOP_SEP
 %token LPAREN RPAREN
 %token EQ
 %token UNIQUE
@@ -32,10 +33,11 @@ open Rawast
 %%
 
 input:  /* empty */                 {}        
-        | input sentence            { let (var,theexpr) = $2 in 
+        | input sentence TOP_SEP           { let (var,theexpr) = $2 in 
                                       let value = string_of_float (Rawast.resolve_expr theexpr) in
                                       print_string ("\ngot: "^(Rawast.get_name var)^" = "^value^"\nreading: "); 
                                       flush stdout}
+        | input TOP_SEP             { }
         | input ENDLINE             { }
         | input EOF                 { print_string "\ncompleted!\n"; raise End_of_file }
 ;
@@ -46,15 +48,16 @@ rhs: SYMB { Rawast.Normal $1 }
 ;
 lhs: exp  { $1 }
      |  exp WHERE whereblock blockend   { Rawast.Where ($1, List.rev $3) }
+     |  exp WHERE ENDLINE whereblock blockend   { Rawast.Where ($1, List.rev $4) }
 ;
 blockend:   ENDBLOCK    {}
 ;
 blocksep: SEP           { }
          | ENDLINE      { }
 ;
-whereblock:   /* empty */               { [] }
-        | sentence                      { [$1] }
-        | whereblock blocksep sentence  { $3::$1 }
+whereblock: sentence blocksep             { [$1] }
+        | whereblock  sentence blocksep { $2::$1 }
+        | whereblock blocksep         { $1 }
 ;
 exp:    NUM                             { Rawast.Number $1 }
         | SYMB                          { Rawast.Variable $1 }
