@@ -20,9 +20,10 @@ rule tokens = parse
     | ws            { tokens lexbuf }
     | '\n'          { print_string "ENDLINE "; [ENDLINE] }
     | ';'           { print_string "SEP "; [SEP] }
-    (*| '\n'ws*';'    { print_string "ENDBLOCK "; flush stdout; [ENDBLOCK;ENDLINE]}*)
-    | '\n'ws*'\n'    { print_string "ENDBLOCK "; flush stdout; [TOP_SEP] }
-    | ';'ws*';'     { print_string "ENDBLOCK "; flush stdout; [ENDLINE;ENDBLOCK] }
+(*    | '\n'ws*';'    { print_string "ENDLINE ENDBLOCK "; flush stdout; [ENDLINE;ENDBLOCK]}
+    | ';'ws*'\n'    { print_string "ENDLINE ENDBLOCK "; flush stdout; [ENDLINE;ENDBLOCK]}*)
+    | '\n'ws*'\n'    { print_string "TOP_SEP "; flush stdout; [TOP_SEP] }
+    | ';'ws*';'     { print_string "ENDLINE ENDBLOCK "; flush stdout; [ENDLINE;ENDBLOCK] }
     | digit+ as num 
                     { print_string (num^" "); [NUM (float_of_string num)]}
     | alpha+ as symb { print_string (symb^" "); try [Hashtbl.find stbl symb] with Not_found -> [SYMB symb]} 
