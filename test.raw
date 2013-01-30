@@ -5,6 +5,7 @@ b=2^e +c where c=1
 
 a= d^c +b where 
         !b= c+d where c=30;d=1;;
-        c =2
+        c = 
+            2 + 1
         ;
         d = c+1

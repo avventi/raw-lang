@@ -41,7 +41,8 @@ input:  /* empty */                 {}
         | input ENDLINE             { }
         | input EOF                 { print_string "\ncompleted!\n"; raise End_of_file }
 ;
-sentence: rhs EQ lhs    { ($1,$3) }  
+sentence: rhs EQ lhs    { ($1,$3) }
+        | rhs EQ ENDLINE lhs    { ($1,$4) }
 ;
 rhs: SYMB { Rawast.Normal $1 }
     | UNIQUE SYMB { Rawast.Unique $2 }
