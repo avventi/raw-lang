@@ -12,10 +12,7 @@
                                   print_string "ENDLINE ENDBLOCK ";
                                   close_ (ENDLINE::ENDBLOCK::l) 
                               end
-        in print_string "TOP_SEP "; close_ [TOP_SEP];;
-                                  
-                                                        
-                                
+        in print_string "TOP_SEP "; close_ [TOP_SEP];;                    
     
     (* stbl contains nullary functions that return
     the corresponding token while optionally performing
@@ -55,5 +52,6 @@ rule tokens = parse
     | ')'           { print_string ")"; [RPAREN] }
     | '='           { print_string "="; [EQ] }
     | '!'           { print_string "!"; [UNIQUE] }
+    | ':'           { print_string ":"; [IN] }
     | _             { tokens lexbuf }
     | eof           { List.append (close_all_blocks ()) [TOP_SEP;EOF] }                 

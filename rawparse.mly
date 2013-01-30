@@ -13,6 +13,7 @@ open Rawast
 %token LPAREN RPAREN
 %token EQ
 %token UNIQUE
+%token IN
 %token <float> NUM
 %token <string> LOP
 %token <string> ROP
@@ -46,6 +47,16 @@ sentence: rhs EQ lhs    { ($1,$3) }
 ;
 rhs: SYMB { Rawast.Normal $1 }
     | UNIQUE SYMB { Rawast.Unique $2 }
+    | func_def  { (*temporary*) Rawast.Normal $1 }
+;
+func_def: SYMB func_arg_list { $1 }
+;
+func_arg_list: func_arg {}
+              |func_arg_list func_arg {}
+              |func_arg_list ENDLINE func_arg {}
+;
+func_arg: SYMB {}
+        | SYMB IN SYMB {}
 ;
 lhs: exp  { $1 }
      |  exp WHERE whereblock blockend   { Rawast.Where ($1, List.rev $3) }
