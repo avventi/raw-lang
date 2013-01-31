@@ -18,7 +18,6 @@
     the corresponding token while optionally performing
     side effects. *)
     
-    let stbl = Hashtbl.create 100;;
     Hashtbl.add stbl "where" (fun () -> incr block_count;WHERE);;
     
     let otbl = Hashtbl.create 100;;

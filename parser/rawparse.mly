@@ -1,6 +1,9 @@
 %{
 open Lexing
 open Rawast
+
+let stbl = Hashtbl.create 100;;
+Hashtbl.add stbl "\n" (fun () -> ENDLINE)
 %}
 
 /* Tokens */
