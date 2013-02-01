@@ -7,7 +7,7 @@ a arg:type
 arg:type
 arg:type = d^c +b where 
         !b= c+d where c=30;d=1;;
-        c arg:type = 
+        c = 
             2 + 1
         ;
         d = c+1

@@ -36,50 +36,52 @@ Hashtbl.add stbl "\n" (fun () -> ENDLINE)
 /* Grammar */
 %%
 
-input:  /* empty */                 {}        
-        | input sentence TOP_SEP           { let (var,theexpr) = $2 in 
-                                      let value = string_of_float (Rawast.resolve_expr theexpr) in
-                                      print_string ("\ngot: "^(Rawast.get_name var)^" = "^value^"\nreading: "); 
-                                      flush stdout}
-        | input TOP_SEP             { }
-        | input ENDLINE             { }
-        | input EOF                 { print_string "\ncompleted!\n"; raise End_of_file }
+input: /* empty */              {}        
+     | input sentence TOP_SEP   { let (var,theexpr) = $2 in 
+                                    let value = string_of_float (Rawast.resolve_expr theexpr) in
+                                    print_string ("\ngot: "^(Rawast.get_name var)^" = "^value^"\nreading: "); 
+                                    flush stdout }
+     | input TOP_SEP            { }
+     | input ENDLINE            { }
+     | input EOF                { print_string "\ncompleted!\n"; raise End_of_file }
 ;
 sentence: rhs EQ lhs    { ($1,$3) }
         | rhs EQ ENDLINE lhs    { ($1,$4) }
 ;
-rhs: SYMB { Rawast.Normal $1 }
-    | UNIQUE SYMB { Rawast.Unique $2 }
-    | func_def  { (*temporary*) Rawast.Normal $1 }
+rhs: SYMB           { Rawast.Normal $1 }
+   | UNIQUE SYMB    { Rawast.Unique $2 }
+   | func_def       { (*temporary*) Rawast.Normal $1 }
 ;
-func_def: SYMB func_arg_list { $1 }
+func_def: SYMB func_arg_list { let (arity,argl) = $2 in
+                                 let argl = List.rev argl in
+                                 begin Hashtbl.add stbl $1 (fun () -> FUN $1); $1 end}
 ;
-func_arg_list: func_arg {}
-              |func_arg_list func_arg {}
-              |func_arg_list ENDLINE func_arg {}
+func_arg_list: func_arg                         { (1,[$1]) }
+             | func_arg_list func_arg           { let (arity,argl) = $1 in (arity+1, $2::argl) }
+             | func_arg_list ENDLINE func_arg   { let (arity,argl) = $1 in (arity+1, $3::argl) }
 ;
-func_arg: SYMB {}
-        | SYMB IN SYMB {}
+func_arg: SYMB          { $1 }
+        | SYMB IN SYMB  { $1 }
 ;
-lhs: exp  { $1 }
-     |  exp WHERE whereblock blockend   { Rawast.Where ($1, List.rev $3) }
-     |  exp WHERE ENDLINE whereblock blockend   { Rawast.Where ($1, List.rev $4) }
+lhs: exp                                    { $1 }
+   | exp WHERE whereblock blockend          { Rawast.Where ($1, List.rev $3) }
+   | exp WHERE ENDLINE whereblock blockend  { Rawast.Where ($1, List.rev $4) }
 ;
-blockend:   ENDBLOCK    {}
+blockend: ENDBLOCK  { }
 ;
-blocksep: SEP           { }
-         | ENDLINE      { }
+blocksep: SEP       { }
+        | ENDLINE   { }
 ;
-whereblock: sentence blocksep             { [$1] }
-        | whereblock  sentence blocksep { $2::$1 }
-        | whereblock blocksep         { $1 }
+whereblock: sentence blocksep               { [$1] }
+          | whereblock  sentence blocksep   { $2::$1 }
+          | whereblock blocksep             { $1 }
 ;
-exp:    NUM                             { Rawast.Number $1 }
-        | SYMB                          { Rawast.Variable $1 }
-        | exp LOP exp                   { Rawast.Binary ($2,$1,$3) }
-        | exp LOP ENDLINE exp %prec LOP { Rawast.Binary ($2,$1,$4) }
-        | exp ROP exp                   { Rawast.Binary ($2,$1,$3) }
-        | exp ROP ENDLINE exp %prec ROP { Rawast.Binary ($2,$1,$4) }
-        | LPAREN exp RPAREN             { $2 }
-        | LPAREN ENDLINE exp RPAREN     { $3 }
+exp: NUM                            { Rawast.Number $1 }
+   | SYMB                           { Rawast.Variable $1 }
+   | exp LOP exp                    { Rawast.Binary ($2,$1,$3) }
+   | exp LOP ENDLINE exp %prec LOP  { Rawast.Binary ($2,$1,$4) }
+   | exp ROP exp                    { Rawast.Binary ($2,$1,$3) }
+   | exp ROP ENDLINE exp %prec ROP  { Rawast.Binary ($2,$1,$4) }
+   | LPAREN exp RPAREN              { $2 }
+   | LPAREN ENDLINE exp RPAREN      { $3 }
 ;
