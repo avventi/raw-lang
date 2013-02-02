@@ -13,7 +13,7 @@ let main () =
                     | x::xs -> l := xs; x
         end in
     while true do
-      Rawparse.input cache lexbuf
+      Parser.input cache lexbuf
     done
   with End_of_file -> exit 0
       

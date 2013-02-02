@@ -1,16 +1,16 @@
-PROD=rawparse.ml rawparse.mli parser/rawparse.ml parser/rawparse.mli
+PROD=parser.ml parser.mli parser/rawparse.ml parser/rawparse.mli
 
 all: rawmain.native
 
-rawmain.native: rawmain.ml rawlex.mll rawparse.ml rawparse.mli
+rawmain.native: rawmain.ml rawlex.mll parser.ml parser.mli
 	ocamlbuild rawmain.native
 
-rawparse.mli: rawparse.ml
-	cat parser/rawparse.mli rawparse.mli.tail > rawparse.mli
+parser.mli: parser.ml
+	cat parser/rawparse.mli parser/rawparse.mli.tail > parser.mli
 
-rawparse.ml: parser/rawparse.mly
+parser.ml: parser/rawparse.mly
 	ocamlyacc parser/rawparse.mly
-	cp parser/rawparse.ml .
+	cp parser/rawparse.ml parser.ml
 
 clean:
 	rm $(PROD)
