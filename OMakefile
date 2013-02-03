@@ -14,7 +14,7 @@ BSRC = $(dir build/src)
 .SUBDIRS: build
 
 ################################################
-# Build an OCaml program
+# Build raw
 #
 
 FILES[] =
