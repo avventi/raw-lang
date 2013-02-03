@@ -1,2 +1,4 @@
+mkdir(-p src/parser)
+
 vmount(-l, $(SRC), src)
 .SUBDIRS: src

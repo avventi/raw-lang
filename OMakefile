@@ -34,7 +34,5 @@ PROGRAM = raw
 
 clean:
   rm raw.opt
-  rm $(BSRC)/rawlex.ml $(BSRC)/parser.ml $(BSRC)/parser.mli
-  rm $(BSRC)/*.o $(BSRC)/*.cmx $(BSRC)/*.cmi 
-  rm $(BSRC)/parser/rawparse.ml $(BSRC)/parser/rawparse.mli
+  rm -R $(BSRC)
   cd ..
