@@ -1,3 +1,4 @@
+vmount(-l, parser, $(BSRC)/parser)
 .SUBDIRS: parser
 
 OCamlGeneratedFiles(rawlex.ml parser.ml)

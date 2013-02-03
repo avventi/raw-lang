@@ -12,3 +12,5 @@ raw
 _build
 *.conflicts
 .omakedb*
+*.omc
+*.opt

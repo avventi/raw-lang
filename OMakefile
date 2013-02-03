@@ -1,25 +1,27 @@
 .PHONY: all install clean
 
-.SUBDIRS:src
-
-clean:
-  rm raw raw.opt OMake*.omc
-  rm src/rawlex.ml src/parser.ml src/parser.mli
-  rm src/*.o src/*.cmx src/*.cmi src/OMakefile.omc 
-  rm src/parser/rawparse.ml src/parser/rawparse.mli src/parser/OMakefile.omc
-  cd ..
-
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
+
+ROOT = $(dir .)
+SRC = $(dir src)
+BUILD = $(dir build)
+BSRC = $(dir build/src)
+
+################################################
+# Creating the build subdirectiry
+#
+
+.SUBDIRS: build
 
 ################################################
 # Build an OCaml program
 #
 
 FILES[] =
-   src/parser
-   src/rawlex
-   src/rawast
-   src/rawmain
+   $(BSRC)/parser
+   $(BSRC)/rawlex
+   $(BSRC)/rawast
+   $(BSRC)/rawmain
 #
 PROGRAM = raw
 # OCAML_LIBS +=
@@ -29,3 +31,10 @@ PROGRAM = raw
 #
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
+
+clean:
+  rm raw.opt
+  rm $(BSRC)/rawlex.ml $(BSRC)/parser.ml $(BSRC)/parser.mli
+  rm $(BSRC)/*.o $(BSRC)/*.cmx $(BSRC)/*.cmi 
+  rm $(BSRC)/parser/rawparse.ml $(BSRC)/parser/rawparse.mli
+  cd ..

@@ -1,0 +1,2 @@
+vmount(-l, $(SRC), src)
+.SUBDIRS: src
