@@ -35,6 +35,10 @@
 
 .SUBDIRS: parser
 
+clean: 
+  rm parser.ml parser.mli *.o *.cmx *.cmi OMake*.omc raw raw.opt rawlex.ml
+  rm parser/rawparse.ml parser/rawparse.mli parser/OMakefile.omc
+
 ########################################################################
 # C configuration.
 # Delete this section if you are not building C files.
@@ -129,7 +133,7 @@ NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 # Workaround for the fact that ocamldep does not pay attention to .mll
 # and .mly files.
 #
-OCamlGeneratedFiles(rawlex.ml)
+OCamlGeneratedFiles(rawlex.ml parser.ml)
 
 ################################################
 # Build an OCaml library
@@ -143,8 +147,10 @@ OCamlGeneratedFiles(rawlex.ml)
 #
 # .DEFAULT: $(OCamlLibrary $(LIB), $(FILES))
 
-parser.ml: parser/rawparse.ml parser/rawparse.mli.tail
+parser.ml: parser/rawparse.ml parser.mli
 	cp parser/rawparse.ml parser.ml
+
+parser.mli: parser/rawparse.ml
 	cat parser/rawparse.mli parser/rawparse.mli.tail > parser.mli
 
 ################################################
@@ -163,4 +169,5 @@ PROGRAM = raw
 # OCAML_OTHER_LIBS +=
 # OCAML_LIB_FLAGS +=
 #
+
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
