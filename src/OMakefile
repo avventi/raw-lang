@@ -1,0 +1,9 @@
+.SUBDIRS: parser
+
+OCamlGeneratedFiles(rawlex.ml parser.ml)
+
+parser.ml: parser/rawparse.ml parser.mli
+  cp parser/rawparse.ml parser.ml
+
+parser.mli: parser/rawparse.ml
+  cat parser/rawparse.mli parser/rawparse.mli.tail > parser.mli
