@@ -53,7 +53,7 @@ rhs: SYMB           { Rawast.Normal $1 }
    | func_def       { (*temporary*) Rawast.Normal $1 }
 ;
 func_def: SYMB func_arg_list { let (arity,argl) = $2 in
-                                 let argl = List.rev argl in
+                                 let _ = List.rev argl in
                                  begin Hashtbl.add stbl $1 (fun () -> FUN $1); $1 end}
 ;
 func_arg_list: func_arg                         { (1,[$1]) }

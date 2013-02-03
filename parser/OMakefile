@@ -1,0 +1,2 @@
+rawparse.ml: rawparse.mly
+	ocamlyacc rawparse.mly
